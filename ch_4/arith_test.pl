@@ -2,29 +2,29 @@
 
 :- [arith].
 
-:- begin_tests(result).
+:- begin_tests(evaluate).
 
-test(result_for_zero) :- result(0, 0).
-test(result_for_true) :- result(true, true).
-test(result_for_false) :- result(false, false).
+test(evaluate_for_zero) :- evaluate(0, 0).
+test(evaluate_for_true) :- evaluate(true, true).
+test(evaluate_for_false) :- evaluate(false, false).
 
-test(result_for_incorrect_program, all(X = [])) :-
-  result(pred(true), X).
+test(evaluate_for_incorrect_program, all(X = [])) :-
+  evaluate(pred(true), X).
 
-test(result_for_multiple_succ) :-
-  result(succ(succ(0)), succ(succ(0))).
+test(evaluate_for_multiple_succ) :-
+  evaluate(succ(succ(0)), succ(succ(0))).
 
-test(result_for_arithmetic_expression) :-
-  result(pred(succ(0)), 0).
+test(evaluate_for_arithmetic_expression) :-
+  evaluate(pred(succ(0)), 0).
 
-test(result_for_something_complex) :-
-  result(
+test(evaluate_for_something_complex) :-
+  evaluate(
     if(iszero(succ(pred(0))), succ(0), succ(succ(0))),
     succ(succ(0))
   ).
 
-test(result_for_something_ridiculous_or_at_least_as_ridiculous_as_i_could_be_bothered_typing_which_is_an_assertion_perhaps_undermined_somewhat_by_the_name_of_this_test) :-
-  result(
+test(evaluate_for_something_ridiculous_or_at_least_as_ridiculous_as_i_could_be_bothered_typing_which_is_an_assertion_perhaps_undermined_somewhat_by_the_name_of_this_test) :-
+  evaluate(
     if(
       if(
         if(
@@ -41,7 +41,7 @@ test(result_for_something_ridiculous_or_at_least_as_ridiculous_as_i_could_be_bot
     false
   ).
 
-:- end_tests(result).
+:- end_tests(evaluate).
 
 :- begin_tests(reduce).
 

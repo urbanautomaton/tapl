@@ -13,3 +13,11 @@ On other systems I think there's someone you can telephone.
 Then to run the tests:
 
     $ make test
+
+And to run it interactively:
+
+    $ swipl -l arith
+    ?- evaluate(iszero(if(true, 0, succ(0))), X).
+    X = true
+    
+    ?-
