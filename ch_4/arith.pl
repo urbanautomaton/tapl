@@ -11,12 +11,12 @@ term(pred(X)) :- term(X).
 term(iszero(X)) :- term(X).
 term(if(X, Y, Z)) :- term(X), term(Y), term(Z).
 
-% ...ditto for values...
+% value/1 succeeds if the term is a value
 value(X) :- nv(X).
 value(true).
 value(false).
 
-% ...and finally numeric values (to which the values/1 predicate refers).
+% nv/1 succeeds if the term is a numeric value
 nv(0).
 nv(succ(X)) :- nv(X).
 
