@@ -1,6 +1,8 @@
 % vim: set ft=prolog:
 
-% these are direct transcriptions of the BNF grammar definitions of terms...
+% term/1 succeeds if the input program is syntactically valid. I haven't
+% actually used it in the evaluation predicates (since invalid programs will
+% fail anyway) but it's here for completeness.
 term(0).
 term(true).
 term(false).
