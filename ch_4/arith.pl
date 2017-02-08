@@ -18,21 +18,27 @@ value(false).
 nv(0).
 nv(succ(X)) :- nv(X).
 
+% result/2 is a wrapper predicate around the reduction rules to tell us when
+% to stop (i.e. when we reach a value, either directly or via further
+% reduction)
 result(X, X) :- value(X), !.
-result(X, Y) :- reduce(X, Y), value(Y), !.
+result(X, Z) :- reduce(X, Y), result(Y, Z), !.
+
+% reduce/2 provides single small-step operational semantic rules for reducing
+% a given term.
 
 % boolean reductions
 reduce(if(true, X, _), X).
 reduce(if(false, _, X), X).
-reduce(if(X, Y, Z), A) :- reduce(X, X1), result(if(X1, Y, Z), A).
+reduce(if(X, Y, Z), if(X1, Y, Z)) :- reduce(X, X1).
 
 % arithmetic reductions
-reduce(succ(X), A) :- reduce(X, X1), result(succ(X1), A).
+reduce(succ(X), succ(X1)) :- reduce(X, X1).
 reduce(pred(0), 0).
 reduce(pred(succ(X)), X) :- nv(X).
-reduce(pred(X), A) :- reduce(X, X1), result(pred(X1), A).
+reduce(pred(X), pred(X1)) :- reduce(X, X1).
 
 % numerical predicate reductions
 reduce(iszero(0), true).
 reduce(iszero(succ(X)), false) :- nv(X).
-reduce(iszero(X), A) :- reduce(X, X1), result(iszero(X1), A).
+reduce(iszero(X), iszero(X1)) :- reduce(X, X1).
