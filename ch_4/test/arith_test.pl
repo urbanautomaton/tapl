@@ -1,6 +1,6 @@
 % vim: set ft=prolog:
 
-:- [arith].
+:- [src(arith)].
 
 :- begin_tests(evaluate).
 
