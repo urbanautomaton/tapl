@@ -21,6 +21,9 @@ nv(succ(X)) :- nv(X).
 % result/2 is a wrapper predicate around the reduction rules to tell us when
 % to stop (i.e. when we reach a value, either directly or via further
 % reduction)
+%
+% The cuts are here because we know these programs will only ever evaluate to
+% a single value, so we don't want to offer a choicepoint.
 result(X, X) :- value(X), !.
 result(X, Z) :- reduce(X, Y), result(Y, Z), !.
 
