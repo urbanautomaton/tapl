@@ -16,8 +16,6 @@ Then to run the tests:
 
 And to run it interactively:
 
-    $ swipl -l arith
+    $ make console
     ?- evaluate(iszero(if(true, 0, succ(0))), X).
-    X = true
-    
-    ?-
+    X = true.
