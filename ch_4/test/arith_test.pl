@@ -61,3 +61,14 @@ test(reduce_if_guard, all(X = [if(true, false, false)])) :-
   ).
 
 :- end_tests(reduce).
+
+:- begin_tests(programs_for).
+
+test(programs_for_false_depth_2, [nondet]) :-
+  programs_for(
+    false,
+    [false, if(true, false, _), if(false, _, false)],
+    2
+  ).
+
+:- end_tests(programs_for).
