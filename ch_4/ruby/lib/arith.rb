@@ -35,6 +35,8 @@ False = Class.new(Value)
 Zero  = Class.new(NumericValue)
 
 class Succ < Term
+  attr_reader :term
+
   def initialize(term)
     @term = term
   end
@@ -53,20 +55,24 @@ class Succ < Term
 end
 
 class Pred < Term
+  attr_reader :term
+
   def initialize(term)
     @term = term
   end
 
   def reduce
     case
-    when @term.is_a?(Zero) then term
-    when @term.is_a?(Succ) && term.term.numeric_value? then term.term
+    when term.is_a?(Zero) then term
+    when term.is_a?(Succ) && term.term.numeric_value? then @term.term
     else Pred.new(term.reduce)
     end
   end
 end
 
 class IsZero < Term
+  attr_reader :term
+
   def initialize(term)
     @term = term
   end
@@ -81,15 +87,17 @@ class IsZero < Term
 end
 
 class If < Term
+  attr_reader :test, :consequent, :alternate
+
   def initialize(test, consequent, alternate)
     @test, @consequent, @alternate = test, consequent, alternate
   end
 
   def reduce
-    case @test
-    when True then @consequent
-    when False then @alternate
-    else If.new(@test.reduce, @consequent, @alternate)
+    case test
+    when True then consequent
+    when False then alternate
+    else If.new(test.reduce, consequent, alternate)
     end
   end
 end
