@@ -79,17 +79,17 @@ programs_for_acc(Acc, Programs, Max) :-
   append(Acc, T1s, NewAcc),
   programs_for_acc(NewAcc, Programs, Max).
 
-expand(Ps0, Ps1, Max) :-
+expand(T0s, T1s, Max) :-
   findall(
     T1,
     (
-      member(T0, Ps0),
+      member(T0, T0s),
       reduce(T1, T0),
-      \+ member(T1, Ps0),
+      \+ member(T1, T0s),
       depth(T1, ST1),
       ST1 =< Max
     ),
-    Ps1
+    T1s
   ).
 
 % evaluate/2 succeeds when the first argument is an arith program evaluating
