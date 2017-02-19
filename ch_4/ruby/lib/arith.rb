@@ -9,6 +9,10 @@ class Term
     false
   end
 
+  def to_s
+    self.class.name
+  end
+
   def reduce
     raise NotImplementedError
   end
@@ -49,9 +53,17 @@ class Succ < Term
     term.numeric_value?
   end
 
+  def to_s
+    "Succ(#{term})"
+  end
+
   def reduce
     self.class.new(term.reduce)
   end
+end
+
+def Succ(term)
+  Succ.new(term)
 end
 
 class Pred < Term
@@ -59,6 +71,10 @@ class Pred < Term
 
   def initialize(term)
     @term = term
+  end
+
+  def to_s
+    "Pred(#{term})"
   end
 
   def reduce
@@ -70,11 +86,19 @@ class Pred < Term
   end
 end
 
+def Pred(term)
+  Pred.new(term)
+end
+
 class IsZero < Term
   attr_reader :term
 
   def initialize(term)
     @term = term
+  end
+
+  def to_s
+    "IsZero(#{term})"
   end
 
   def reduce
@@ -86,11 +110,19 @@ class IsZero < Term
   end
 end
 
+def IsZero(term)
+  IsZero.new(term)
+end
+
 class If < Term
   attr_reader :test, :consequent, :alternate
 
   def initialize(test, consequent, alternate)
     @test, @consequent, @alternate = test, consequent, alternate
+  end
+
+  def to_s
+    "If(#{test}, #{consequent}, #{alternate})"
   end
 
   def reduce
@@ -102,6 +134,10 @@ class If < Term
   end
 end
 
+def If(test, consequent, alternate)
+  If.new(test, consequent, alternate)
+end
+
 class Machine
   def evaluate(term)
     if term.value?
@@ -111,3 +147,13 @@ class Machine
     end
   end
 end
+
+term = If(
+    IsZero(Pred(Succ(Pred(Succ(Zero.new))))),
+    Succ(Succ(Zero.new)),
+    If(False.new, Zero.new, Succ(Zero.new))
+  )
+
+puts term
+puts "=>"
+puts Machine.new.evaluate(term)
