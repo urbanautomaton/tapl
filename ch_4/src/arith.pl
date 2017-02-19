@@ -72,11 +72,10 @@ programs_for(Value, Programs, Max) :-
   value(Value),
   programs_for_acc([Value], Programs, Max).
 
-programs_for_acc(Acc, Acc, Max) :- expand(Acc, [], Max).
+programs_for_acc(Acc, Acc, Max) :- expand(Acc, Acc, Max).
 programs_for_acc(Acc, Programs, Max) :-
   expand(Acc, T1s, Max),
-  T1s \= [],
-  append(Acc, T1s, NewAcc),
+  Acc \= T1s,
   programs_for_acc(NewAcc, Programs, Max).
 
 expand(T0s, T1s, Max) :-
@@ -89,7 +88,8 @@ expand(T0s, T1s, Max) :-
       depth(T1, ST1),
       ST1 =< Max
     ),
-    T1s
+    T1s,
+    T0s
   ).
 
 % evaluate/2 succeeds when the first argument is an arith program evaluating
