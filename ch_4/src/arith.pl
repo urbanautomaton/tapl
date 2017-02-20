@@ -73,10 +73,10 @@ programs_for(Value, Programs, Max) :-
   programs_for_acc([Value], Programs, Max).
 
 programs_for_acc(Acc, Acc, Max) :- expand(Acc, Acc, Max).
-programs_for_acc(Acc, Programs, Max) :-
-  expand(Acc, T1s, Max),
-  Acc \= T1s,
-  programs_for_acc(NewAcc, Programs, Max).
+programs_for_acc(T0s, Programs, Max) :-
+  expand(T0s, T1s, Max),
+  T0s \= T1s,
+  programs_for_acc(T1s, Programs, Max).
 
 expand(T0s, T1s, Max) :-
   findall(
