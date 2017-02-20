@@ -65,10 +65,29 @@ test(reduce_if_guard, all(X = [if(true, false, false)])) :-
 :- begin_tests(programs_for).
 
 test(programs_for_false_depth_2, [nondet]) :-
-  programs_for(
+  programs_for(false, Ps, 2),
+  sort(Ps, PsSorted),
+  assertion(PsSorted = [
     false,
-    [false, if(true, false, _), if(false, _, false)],
-    2
-  ).
+    if(false, _, false),
+    if(true, false, true)
+  ]).
+
+test(programs_for_succ_0_depth_3, [nondet]) :-
+  programs_for(succ(0), Ps, 3),
+  sort(Ps, PsSorted),
+  assertion(PsSorted = [
+    succ(0),
+    succ(pred(0)),
+    succ(if(false, _, 0)),
+    succ(if(true, 0, _)),
+    if(false, _, succ(0)),
+    if(true, succ(0), _),
+    if(iszero(0), succ(0), _),
+    if(if(false, _, false), _, succ(0)),
+    if(if(false, _, true), succ(0), _),
+    if(if(true, false, _), _, succ(0)),
+    if(if(true, true, _), succ(0), _)
+  ]).
 
 :- end_tests(programs_for).
