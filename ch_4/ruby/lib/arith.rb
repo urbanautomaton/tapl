@@ -140,10 +140,18 @@ end
 
 class Machine
   def evaluate(term)
+    _evaluate(term, 0)
+  end
+
+  private
+
+  def _evaluate(term, level)
+    puts "#{level}: #{term}"
+
     if term.value?
       term
     else
-      evaluate(term.reduce)
+      _evaluate(term.reduce, level + 1)
     end
   end
 end
@@ -154,6 +162,4 @@ term = If(
     If(False.new, Zero.new, Succ(Zero.new))
   )
 
-puts term
-puts "=>"
-puts Machine.new.evaluate(term)
+Machine.new.evaluate(term)
