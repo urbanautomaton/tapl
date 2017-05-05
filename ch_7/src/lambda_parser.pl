@@ -6,8 +6,6 @@ parse_term(String, Term) :-
 % t  ::= t' t | t'
 % t' ::= x | λx. t | (t)
 
-tuplize(X, Y, (Y, X)).
-
 lambda_expr(X) -->
   lambda_expr_(X).
 lambda_expr(Z) -->
