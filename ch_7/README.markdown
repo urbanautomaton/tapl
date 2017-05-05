@@ -1,6 +1,6 @@
-# arith.pl
+# The untyped lambda calculus
 
-Prolog implementation of the arithmetic expressions language defined in Ch. 3.
+Prolog implementation of the untyped lambda calculus described in Ch 6.
 
 ## To run
 
@@ -17,5 +17,5 @@ Then to run the tests:
 And to run it interactively:
 
     $ make console
-    ?- evaluate(iszero(if(true, 0, succ(0))), X).
-    X = true.
+    ?- evaluate(((λ(x, x), λ(x, x)), λ(z, z)), X).
+    X = (λ(x, x), λ(z, z)).
