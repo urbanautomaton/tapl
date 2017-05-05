@@ -1,7 +1,7 @@
 % vim: set ft=prolog:
 
 parse_term(String, Term) :-
-  phrase(lambda_expr(Term), String, []).
+  phrase(lambda_expr(Term), String, []), !.
 
 % t  ::= t' t | t'
 % t' ::= x | λx. t | (t)
