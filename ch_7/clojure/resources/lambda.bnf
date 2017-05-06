@@ -3,5 +3,5 @@ expr       ::= t
 <t1>       ::= var | abs | <"("> t <")">
 app        ::= app <whitespace> t1 | t1 <whitespace> t1
 abs        ::= <"λ."> var <whitespace> t
-var        ::= #'[a-z]'+
-whitespace ::= #'\s'+
+var        ::= #'[a-z]+'
+whitespace ::= #'\s+'

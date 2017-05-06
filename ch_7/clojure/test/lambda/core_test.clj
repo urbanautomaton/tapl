@@ -11,6 +11,11 @@
         (lambda-parser "a")
         [:expr [:var "a"]]))
 
+    (testing "long variable name"
+      (assert-eq
+        (lambda-parser "azazazaz")
+        [:expr [:var "azazazaz"]]))
+
     (testing "parenthesised variable"
       (assert-eq
         (lambda-parser "(a)")
