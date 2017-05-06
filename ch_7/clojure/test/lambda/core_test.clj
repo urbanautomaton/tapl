@@ -75,4 +75,16 @@
              [:app
               [:var "x"]
               [:var "y"]]
-             [:var "z"]]]]]]))))
+             [:var "z"]]]]]]))
+
+    (testing "parenthesised abstractions"
+      (assert-eq
+        (lambda-parser "λ.x (λ.y x) y")
+        [:expr
+         [:abs
+          [:var "x"]
+          [:app
+           [:abs
+            [:var "y"]
+            [:var "x"]]
+           [:var "y"]]]]))))
