@@ -4,6 +4,23 @@
 
 (defn assert-eq [x y] (is (= x y)))
 
+(deftest test-debruinify
+  (testing "debruinify:"
+    (testing "identity"
+      (assert-eq
+        (debruinify (lambda-parser "λ.x x"))
+        [:abs [:var 0]]))
+
+    (testing "nested abstractions"
+      (assert-eq
+        (debruinify (lambda-parser "λ.x λ.y λ.z x y z"))
+        [:abs
+         [:abs
+          [:abs
+           [:app
+            [:app [:var 2] [:var 1]]
+            [:var 0]]]]]))))
+
 (deftest test-lambda-parser
   (testing "lambda term:"
     (testing "variable"

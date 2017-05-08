@@ -1,10 +1,25 @@
 (ns lambda.core
   (:require [instaparse.core :as insta]
+            [clojure.core.match :refer [match]]
             [clojure.core.logic])
   (:refer-clojure :exclude [==])
   (:use clojure.core.logic))
 
 (def lambda-parser (insta/parser (clojure.java.io/resource "lambda.bnf")))
+
+(defn debruinify
+  ([term] (debruinify term ()))
+  ([term bound]
+   (match term
+          [:expr a] (debruinify a bound)
+          [:app a b] [:app (debruinify a bound) (debruinify b bound)]
+          [:abs a b] [:abs (debruinify b (conj bound a))]
+          [:var a] [:var (.indexOf bound [:var a])])))
+
+(debruinify (lambda-parser "(λ.x x) (λ.y y)"))
+(debruinify (lambda-parser "λ.x (λ.x x) x"))
+(debruinify (lambda-parser "λ.x λ.y λ.z x y z"))
+(debruinify (lambda-parser "λ.x y"))
 
 (defne replace-in [in name with result]
   ([[:var a] [:var a] with with])
