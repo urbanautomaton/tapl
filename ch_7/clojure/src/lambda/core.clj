@@ -29,15 +29,25 @@
                      (some #{[:var a]} naming) [:var (+ (.indexOf naming [:var a]) (count bound))]
                      :else (throw (Exception. "variable encountered that's neither bound, nor in naming context"))))))
 
+(defn restore-names [term naming]
+  (match term
+         [:expr a] (restore-names a naming)
+         [:app a b] [:app (restore-names a naming) (restore-names b naming)]
+         [:abs b] (let [name (fresh-name naming)]
+                    [:abs [:var name] (restore-names b (conj naming name))])
+         [:var a] [:var (nth naming a)]))
+
+(restore-names [:abs [:var 0]] [])
+(restore-names [:app [:var 1] [:var 0]] (list [:var "q"] [:var "wat"]))
+
+(restore-names (remove-names (lambda-parser "(λ.x x) (λ.x x)")) '())
+(restore-names (remove-names (lambda-parser "λ.x (x (λ.x x))")) '())
+
 (defn string-to-codes [string]
   (map int (seq string)))
 
 (defn codes-to-string [codes]
   (apply str (map char codes)))
-
-(empty? '())
-
-(seq 3)
 
 (defn increment-codes [codes min max]
   (if (empty? codes) (list min)
@@ -47,33 +57,18 @@
         (conj (increment-codes rest min max) min)
         (conj rest head-inc)))))
 
-(increment-codes [10 10 10] 0 10)
-
-
 (defn next-name [name]
-  (codes-to-string (increment-codes (reverse (string-to-codes)) name 97 122)))
-
-(int \z)
-
-(next-name "a")
-
-(split)
-
-(int \a)
-
-(str \a \b)
-(seq "hello")
-
-(str "a" "b")
+  (codes-to-string
+    (increment-codes
+      (reverse (string-to-codes name))
+      (int \a)
+      (int \z))))
 
 (defn fresh-name
-  ([taken] (fresh-name "a" taken))
+  ([taken] (fresh-name taken "a"))
   ([taken current] (if (some #{current} taken)
-                     (fresh-name (next-name current) taken)
+                     (fresh-name taken (next-name current))
                      current)))
-
-(defn restore-names [term naming]
-  )
 
 (defne replace-in [in name with result]
   ([[:var a] [:var a] with with])
