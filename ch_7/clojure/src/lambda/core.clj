@@ -7,19 +7,73 @@
 
 (def lambda-parser (insta/parser (clojure.java.io/resource "lambda.bnf")))
 
-(defn debruinify
-  ([term] (debruinify term ()))
-  ([term bound]
+(defn free-variables 
+  ([term] (free-variables term ()))
+  ([term bound] 
    (match term
-          [:expr a] (debruinify a bound)
-          [:app a b] [:app (debruinify a bound) (debruinify b bound)]
-          [:abs a b] [:abs (debruinify b (conj bound a))]
-          [:var a] [:var (.indexOf bound [:var a])])))
+          [:expr a] (free-variables a bound)
+          [:app a b] (concat (free-variables a bound) (free-variables b bound))
+          [:abs a b] (free-variables b (conj bound a))
+          [:var a] (if (some #{[:var a]} bound) '() (list [:var a])))))
 
-(debruinify (lambda-parser "(λ.x x) (λ.y y)"))
-(debruinify (lambda-parser "λ.x (λ.x x) x"))
-(debruinify (lambda-parser "λ.x λ.y λ.z x y z"))
-(debruinify (lambda-parser "λ.x y"))
+(defn remove-names
+  ([term] (let [naming (free-variables term)]
+            (remove-names term () naming)))
+  ([term bound naming]
+   (match term
+          [:expr a] (remove-names a bound naming)
+          [:app a b] [:app (remove-names a bound naming) (remove-names b bound naming)]
+          [:abs a b] [:abs (remove-names b (conj bound a) naming)]
+          [:var a] (cond
+                     (some #{[:var a]} bound) [:var (.indexOf bound [:var a])]
+                     (some #{[:var a]} naming) [:var (+ (.indexOf naming [:var a]) (count bound))]
+                     :else (throw (Exception. "variable encountered that's neither bound, nor in naming context"))))))
+
+(defn string-to-codes [string]
+  (map int (seq string)))
+
+(defn codes-to-string [codes]
+  (apply str (map char codes)))
+
+(empty? '())
+
+(seq 3)
+
+(defn increment-codes [codes min max]
+  (if (empty? codes) (list min)
+    (let [[head & rest] codes
+          head-inc (inc head)]
+      (if (> head-inc max)
+        (conj (increment-codes rest min max) min)
+        (conj rest head-inc)))))
+
+(increment-codes [10 10 10] 0 10)
+
+
+(defn next-name [name]
+  (codes-to-string (increment-codes (reverse (string-to-codes)) name 97 122)))
+
+(int \z)
+
+(next-name "a")
+
+(split)
+
+(int \a)
+
+(str \a \b)
+(seq "hello")
+
+(str "a" "b")
+
+(defn fresh-name
+  ([taken] (fresh-name "a" taken))
+  ([taken current] (if (some #{current} taken)
+                     (fresh-name (next-name current) taken)
+                     current)))
+
+(defn restore-names [term naming]
+  )
 
 (defne replace-in [in name with result]
   ([[:var a] [:var a] with with])
@@ -48,7 +102,7 @@
    (replace-in b a [:abs x y] result)))
 
 (run 1 [q]
-      (replace-in [:var "a"] [:var "a"] [:var "b"] q))
+     (replace-in [:var "a"] [:var "a"] [:var "b"] q))
 
 (run 1 [q]
      (evaluate (lambda-parser "(λ.x x) (λ.y y)") q))

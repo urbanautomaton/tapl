@@ -4,22 +4,44 @@
 
 (defn assert-eq [x y] (is (= x y)))
 
-(deftest test-debruinify
-  (testing "debruinify:"
+(deftest test-free-variables
+  (testing "free-variables:"
     (testing "identity"
       (assert-eq
-        (debruinify (lambda-parser "λ.x x"))
+        (free-variables (lambda-parser "λ.x x"))
+        '()))
+
+    (testing "some free variables"
+      (assert-eq
+        (free-variables (lambda-parser "(λ.x x) y z"))
+        '([:var "y"] [:var "z"])))))
+
+(deftest test-remove-names
+  (testing "remove-names:"
+    (testing "identity"
+      (assert-eq
+        (remove-names (lambda-parser "λ.x x"))
         [:abs [:var 0]]))
 
     (testing "nested abstractions"
       (assert-eq
-        (debruinify (lambda-parser "λ.x λ.y λ.z x y z"))
+        (remove-names (lambda-parser "λ.x λ.y λ.z x y z"))
         [:abs
          [:abs
           [:abs
            [:app
             [:app [:var 2] [:var 1]]
-            [:var 0]]]]]))))
+            [:var 0]]]]]))
+
+    (testing "free variable"
+      (assert-eq
+        (remove-names (lambda-parser "λ.x y"))
+        [:abs [:var 1]]))
+
+    (testing "explicit naming context"
+      (assert-eq
+        (remove-names (lambda-parser "λ.w y w") '() '([:var "b"] [:var "a"] [:var "z"] [:var "y"] [:var "x"]))
+        [:abs [:app [:var 4] [:var 0]]]))))
 
 (deftest test-lambda-parser
   (testing "lambda term:"
