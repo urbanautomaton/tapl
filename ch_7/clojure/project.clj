@@ -3,5 +3,6 @@
   :url "https://github.com/urbanautomaton/tapl/ch_7/clojure"
   :license {:name "MIT License"
             :url "http://www.opensource.org/licenses/mit-license.php"}
-  :dependencies [[org.clojure/clojure "1.8.0"],
+  :dependencies [[org.clojure/clojure "1.8.0"]
+                 [org.clojure/core.logic  "0.8.11"]
                  [instaparse  "1.4.5"]])
