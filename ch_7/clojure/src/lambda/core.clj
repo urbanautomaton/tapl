@@ -1,9 +1,8 @@
 (ns lambda.core
   (:require [instaparse.core :as insta]
             [clojure.core.match :refer [match]]
-            [clojure.core.logic])
-  (:refer-clojure :exclude [==])
-  (:use clojure.core.logic))
+            [clojure.core.logic :refer :all])
+  (:refer-clojure :exclude [==]))
 
 (def lambda-parser (insta/parser (clojure.java.io/resource "lambda.bnf")))
 
