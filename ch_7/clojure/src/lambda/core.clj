@@ -29,20 +29,6 @@
                      (some #{[:var a]} naming) [:var (+ (.indexOf naming [:var a]) (count bound))]
                      :else (throw (Exception. "variable encountered that's neither bound, nor in naming context"))))))
 
-(defn restore-names [term naming]
-  (match term
-         [:expr a] (restore-names a naming)
-         [:app a b] [:app (restore-names a naming) (restore-names b naming)]
-         [:abs b] (let [name (fresh-name naming)]
-                    [:abs [:var name] (restore-names b (conj naming name))])
-         [:var a] [:var (nth naming a)]))
-
-(restore-names [:abs [:var 0]] [])
-(restore-names [:app [:var 1] [:var 0]] (list [:var "q"] [:var "wat"]))
-
-(restore-names (remove-names (lambda-parser "(λ.x x) (λ.x x)")) '())
-(restore-names (remove-names (lambda-parser "λ.x (x (λ.x x))")) '())
-
 (defn string-to-codes [string]
   (map int (seq string)))
 
@@ -69,6 +55,14 @@
   ([taken current] (if (some #{current} taken)
                      (fresh-name taken (next-name current))
                      current)))
+
+(defn restore-names [term naming]
+  (match term
+         [:expr a] (restore-names a naming)
+         [:app a b] [:app (restore-names a naming) (restore-names b naming)]
+         [:abs b] (let [name (fresh-name naming)]
+                    [:abs [:var name] (restore-names b (conj naming name))])
+         [:var a] [:var (nth naming a)]))
 
 (defne replace-in [in name with result]
   ([[:var a] [:var a] with with])

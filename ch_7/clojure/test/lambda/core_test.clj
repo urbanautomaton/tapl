@@ -43,6 +43,23 @@
         (remove-names (lambda-parser "λ.w y w") '() '([:var "b"] [:var "a"] [:var "z"] [:var "y"] [:var "x"]))
         [:abs [:app [:var 4] [:var 0]]]))))
 
+(deftest test-restore-names
+  (testing "restore-names:"
+    (testing "identity"
+      (assert-eq
+        (restore-names [:abs [:var 0]] '())
+        [:abs [:var "a"] [:var "a"]]))
+
+    (testing "with naming context"
+      (assert-eq
+        (restore-names [:abs [:app [:var 0] [:var 1]]] '("w"))
+        [:abs [:var "a"] [:app [:var "a"] [:var "w"]]]))
+
+    (testing "avoiding a name collision"
+      (assert-eq
+        (restore-names [:abs [:var 0]] '("a"))
+        [:abs [:var "b"] [:var "b"]]))))
+
 (deftest test-lambda-parser
   (testing "lambda term:"
     (testing "variable"
