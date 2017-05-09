@@ -1,10 +1,9 @@
 (ns lambda.core
-  (:require [instaparse.core :as insta]
+  (:require [clojure.core.logic :refer :all]
             [clojure.core.match :refer [match]]
-            [clojure.core.logic :refer :all])
+            [lambda.parser :refer [parse]])
   (:refer-clojure :exclude [==]))
 
-(def lambda-parser (insta/parser (clojure.java.io/resource "lambda.bnf")))
 
 (defn free-variables 
   ([term] (free-variables term ()))
@@ -88,12 +87,3 @@
           (== result [:app [:abs a b] t2r])))
   ([[:app [:abs a b] [:abs x y]] _]
    (replace-in b a [:abs x y] result)))
-
-(run 1 [q]
-     (replace-in [:var "a"] [:var "a"] [:var "b"] q))
-
-(run 1 [q]
-     (evaluate (lambda-parser "(λ.x x) (λ.y y)") q))
-
-(run 1 [q]
-     (evaluate (lambda-parser "(λ.x x) ((λ.y y) (λ.z z))") q))
