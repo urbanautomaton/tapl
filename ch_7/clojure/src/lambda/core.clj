@@ -4,15 +4,21 @@
             [lambda.parser :refer [parse]])
   (:refer-clojure :exclude [==]))
 
+(defmulti free-variables-mm (fn [term bound] (first term)))
+(defmethod free-variables-mm :expr
+  [[_ a] bound]
+  (free-variables-mm a bound))
+(defmethod free-variables-mm :app
+  [[_ a b] bound]
+  (concat (free-variables-mm a bound) (free-variables-mm b bound)))
+(defmethod free-variables-mm :abs
+  [[_ a b] bound]
+  (free-variables-mm b (conj bound a)))
+(defmethod free-variables-mm :var
+  [[_ a] bound]
+  (if (some #{[:var a]} bound) '() (list [:var a])))
 
-(defn free-variables 
-  ([term] (free-variables term ()))
-  ([term bound] 
-   (match term
-          [:expr a] (free-variables a bound)
-          [:app a b] (concat (free-variables a bound) (free-variables b bound))
-          [:abs a b] (free-variables b (conj bound a))
-          [:var a] (if (some #{[:var a]} bound) '() (list [:var a])))))
+(defn free-variables [term] (free-variables-mm term ()))
 
 (defn remove-names
   ([term] (let [naming (free-variables term)]
