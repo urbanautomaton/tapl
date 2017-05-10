@@ -1,8 +1,5 @@
 (ns lambda.terms)
 
-(defn free-variables [term]
-  (free-variables-in term '()))
-
 (defprotocol LambdaTerm
   (free-variables-in [this bound]))
 
@@ -29,3 +26,6 @@
   LambdaTerm
   (free-variables-in [this bound]
     (free-variables-in body (conj bound param))))
+
+(defn free-variables [term]
+  (free-variables-in term '()))
