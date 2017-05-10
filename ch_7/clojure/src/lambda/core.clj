@@ -1,72 +1,11 @@
 (ns lambda.core
   (:require [clojure.core.logic :refer :all]
             [clojure.core.match :refer [match]]
-            [lambda.parser :refer [parse]])
+            [lambda.parser :refer [parse]]
+            [lambda.terms :refer :all]
+            [lambda.names :refer [fresh-name]])
+  (:import [lambda.terms Var App Abs])
   (:refer-clojure :exclude [==]))
-
-(defmulti free-variables-mm (fn [term bound] (first term)))
-(defmethod free-variables-mm :expr
-  [[_ a] bound]
-  (free-variables-mm a bound))
-(defmethod free-variables-mm :app
-  [[_ a b] bound]
-  (concat (free-variables-mm a bound) (free-variables-mm b bound)))
-(defmethod free-variables-mm :abs
-  [[_ a b] bound]
-  (free-variables-mm b (conj bound a)))
-(defmethod free-variables-mm :var
-  [[_ a] bound]
-  (if (some #{[:var a]} bound) '() (list [:var a])))
-
-(defn free-variables [term] (free-variables-mm term ()))
-
-(defn remove-names
-  ([term] (let [naming (free-variables term)]
-            (remove-names term () naming)))
-  ([term bound naming]
-   (match term
-          [:expr a] (remove-names a bound naming)
-          [:app a b] [:app (remove-names a bound naming) (remove-names b bound naming)]
-          [:abs a b] [:abs (remove-names b (conj bound a) naming)]
-          [:var a] (cond
-                     (some #{[:var a]} bound) [:var (.indexOf bound [:var a])]
-                     (some #{[:var a]} naming) [:var (+ (.indexOf naming [:var a]) (count bound))]
-                     :else (throw (Exception. "variable encountered that's neither bound, nor in naming context"))))))
-
-(defn string-to-codes [string]
-  (map int (seq string)))
-
-(defn codes-to-string [codes]
-  (apply str (map char codes)))
-
-(defn increment-codes [codes min max]
-  (if (empty? codes) (list min)
-    (let [[head & rest] codes
-          head-inc (inc head)]
-      (if (> head-inc max)
-        (conj (increment-codes rest min max) min)
-        (conj rest head-inc)))))
-
-(defn next-name [name]
-  (codes-to-string
-    (increment-codes
-      (reverse (string-to-codes name))
-      (int \a)
-      (int \z))))
-
-(defn fresh-name
-  ([taken] (fresh-name taken "a"))
-  ([taken current] (if (some #{current} taken)
-                     (fresh-name taken (next-name current))
-                     current)))
-
-(defn restore-names [term naming]
-  (match term
-         [:expr a] (restore-names a naming)
-         [:app a b] [:app (restore-names a naming) (restore-names b naming)]
-         [:abs b] (let [name (fresh-name naming)]
-                    [:abs [:var name] (restore-names b (conj naming name))])
-         [:var a] [:var (nth naming a)]))
 
 (defne replace-in [in name with result]
   ([[:var a] [:var a] with with])
