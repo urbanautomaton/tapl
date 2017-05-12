@@ -4,7 +4,7 @@ parse_term(String, Term) :-
   phrase(lambda_expr(X), String, []), X = Term, !.
 
 % t  ::= t' t | t'
-% t' ::= x | λx. t | (t)
+% t' ::= x | λx:type. t | if t then t else t | (t)
 
 lambda_expr(X) -->
   lambda_expr_(X).
@@ -18,6 +18,8 @@ lambda_expr_(X) -->
   lambda_var(X).
 lambda_expr_(λ(X, T, Y)) -->
   `λ.`, lambda_var(X), `:`, lambda_type(T), ` `, lambda_expr(Y).
+lambda_expr_(if(X, Y, Z)) -->
+  `if `, lambda_expr(X), ` then `, lambda_expr(Y), ` else `, lambda_expr(Z).
 lambda_expr_(X) -->
   `(`, lambda_expr(X), `)`.
 

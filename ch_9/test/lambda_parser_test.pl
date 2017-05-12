@@ -46,6 +46,12 @@ test(parse_abstraction_with_left_nested_type_arg) :-
     λ(x, function(function(bool, bool), bool), x)
   ).
 
+test(parse_if_statement) :-
+  parse_term(
+    `if x then y else z`,
+    if(x, y, z)
+  ).
+
 % test(parse_complex_abstraction) :-
 %   parse_term(`λ.x λ.y (λ.z (z y) x)`, λ(x, λ(y, λ(z, ((z, y), x))))).
 
