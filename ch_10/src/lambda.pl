@@ -1,28 +1,61 @@
 % vim: set ft=prolog:
 
 variable(X) :- atom(X).
-app((X, Y)) :- term(X), term(Y).
-abs(λ(X, Y)) :- atom(X), term(Y).
 
-term(X) :- variable(X).
-term(X) :- app(X).
-term(X) :- abs(X).
+value(λ(_, _, _)).
+value(true).
+value(false).
 
-value(X) :- abs(X).
+% T-Var
+typeof(Γ, X, T) :-
+  variable(X),
+  member((X, T), Γ).
+
+% T-True
+typeof(_, true, bool).
+
+% T-False
+typeof(_, false, bool).
+
+% T-If
+typeof(Γ, if(X, Y, Z), T) :-
+  typeof(Γ, X, bool),
+  typeof(Γ, Y, T),
+  typeof(Γ, Z, T).
+
+% T-Abs
+typeof(Γ, λ(X, T1, Z), function(T1, T2)) :-
+  typeof([(X, T1)|Γ], Z, T2).
+
+% T-App
+typeof(Γ, (X, Y), T2) :-
+  typeof(Γ, X, function(T1, T2)),
+  typeof(Γ, Y, T1).
 
 % E-App1
 evaluate((X, Y), (RX, Y)) :-
   evaluate(X, RX).
 
 % E-App2
-evaluate((λ(X, Y), Z), (λ(X, Y), RZ)) :-
+evaluate((λ(X, T, Y), Z), (λ(X, T, Y), RZ)) :-
   evaluate(Z, RZ).
 
 % E-AppAbs
-evaluate((λ(X, Y), λ(A, B)), R) :-
-  beta_reduce((λ(X, Y), λ(A, B)), R).
+evaluate((λ(X, _, Y), V), R) :-
+  value(V),
+  beta_reduce((λ(X, _, Y), V), R).
 
-beta_reduce((λ(X, Y), Z), R) :-
+% E-IfTrue
+evaluate(if(true, X, _), X).
+
+% E-IfFalse
+evaluate(if(false, _, X), X).
+
+% E-If
+evaluate(if(X, Y, Z), if(X1, Y, Z)) :-
+  evaluate(X, X1).
+
+beta_reduce((λ(X, _, Y), Z), R) :-
   replace(X, Y, Z, R).
 
 % replace/4 - replace(Name, In, With, Result)
@@ -38,22 +71,22 @@ replace(Name, (X, Y), With, (RX, RY)) :-
   replace(Name, X, With, RX),
   replace(Name, Y, With, RY).
 
-replace(Name, λ(Name, Y), _, λ(Name, Y)).
+replace(Name, λ(Name, T, Y), _, λ(Name, T, Y)).
 
-replace(Name, λ(X, Y), With, RY) :-
+replace(Name, λ(X, _, Y), With, RY) :-
   Name \== X,
   free_variables(With, FreeInWith),
   \+ member(X, FreeInWith),
   replace(Name, Y, With, RY).
 
-replace(Name, λ(X, Y), With, λ(X1, RY)) :-
+replace(Name, λ(X, T, Y), With, λ(X1, T, RY)) :-
   Name \== X,
   free_variables(With, FreeInWith),
   member(X, FreeInWith),
-  alpha_convert(λ(X, Y), λ(X1, Y1), FreeInWith),
-  replace(Name, λ(X1, Y1), With, RY).
+  alpha_convert(λ(X, T, Y), λ(X1, T, Y1), FreeInWith),
+  replace(Name, λ(X1, T, Y1), With, RY).
 
-alpha_convert(λ(X, Y), λ(X1, Y1), Avoiding) :-
+alpha_convert(λ(X, T, Y), λ(X1, T, Y1), Avoiding) :-
   fresh_name(X, X1, Avoiding),
   rewrite(X, Y, X1, Y1).
 
@@ -69,8 +102,8 @@ rewrite(Name, (X, Y), With, (X1, Y1)) :-
   rewrite(Name, X, With, X1),
   rewrite(Name, Y, With, Y1).
 
-rewrite(Name, λ(Name, Y), _, λ(Name, Y)).
-rewrite(Name, λ(X, Y), With, λ(X, Y1)) :-
+rewrite(Name, λ(Name, _, Y), _, λ(Name, _, Y)).
+rewrite(Name, λ(X, _, Y), With, λ(X, _, Y1)) :-
   Name \== X,
   rewrite(Name, Y, With, Y1).
 
@@ -90,7 +123,7 @@ free_variables(Bound, (X, Y), Vs) :-
   free_variables(Bound, Y, VYs),
   append(VXs, VYs, Vs).
 
-free_variables(Bound, λ(X, Y), Vs) :-
+free_variables(Bound, λ(X, _, Y), Vs) :-
   free_variables([X|Bound], Y, Vs).
 
 fresh_name(N, N1, Avoiding) :-
