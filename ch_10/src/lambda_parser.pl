@@ -1,5 +1,7 @@
 % vim: set ft=prolog:
 
+:- [library(dcg/basics)].
+
 parse_term(String, Term) :-
   phrase(lambda_expr(X), String, []), X = Term, !.
 
@@ -9,17 +11,17 @@ parse_term(String, Term) :-
 lambda_expr(X) -->
   lambda_expr_(X).
 lambda_expr(Z) -->
-  lambda_expr_(X), ` `, lambda_expr_(Y), application_tail((X, Y), Z).
+  lambda_expr_(X), whitespace, lambda_expr_(Y), application_tail((X, Y), Z).
 
 application_tail(Accum, Accum) --> { }.
-application_tail(Accum, Z) --> ` `, lambda_expr_(Y), application_tail((Accum, Y), Z).
+application_tail(Accum, Z) --> whitespace, lambda_expr_(Y), application_tail((Accum, Y), Z).
 
 lambda_expr_(X) -->
   lambda_var(X).
 lambda_expr_(λ(X, T, Y)) -->
-  `λ.`, lambda_var(X), `:`, lambda_type(T), ` `, lambda_expr(Y).
+  `λ.`, lambda_var(X), `:`, lambda_type(T), whitespace, lambda_expr(Y).
 lambda_expr_(if(X, Y, Z)) -->
-  `if `, lambda_expr(X), ` then `, lambda_expr(Y), ` else `, lambda_expr(Z).
+  `if `, lambda_expr(X), whitespace, `then`, whitespace, lambda_expr(Y), whitespace, `else`, whitespace, lambda_expr(Z).
 lambda_expr_(X) -->
   `(`, lambda_expr(X), `)`.
 
@@ -33,6 +35,8 @@ lambda_var(Variable) -->
   lower_letter(H),
   lower_letters(T),
   { atom_codes(Variable, [H|T]) }.
+
+whitespace --> white, whites.
 
 lower_letters([C|T]) -->
   lower_letter(C), !,
