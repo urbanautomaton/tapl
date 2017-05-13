@@ -19,7 +19,7 @@ application_tail(Accum, Z) --> whitespace, lambda_expr_(Y), application_tail((Ac
 lambda_expr_(X) -->
   lambda_var(X).
 lambda_expr_(λ(X, T, Y)) -->
-  `λ.`, lambda_var(X), `:`, lambda_type(T), whitespace, lambda_expr(Y).
+  `λ`, lambda_var(X), `:`, lambda_type(T), `.`, whites, lambda_expr(Y).
 lambda_expr_(if(X, Y, Z)) -->
   `if `, lambda_expr(X), whitespace, `then`, whitespace, lambda_expr(Y), whitespace, `else`, whitespace, lambda_expr(Z).
 lambda_expr_(X) -->
