@@ -74,6 +74,48 @@ test(evaluate_if_with_reducible_arg, [nondet]) :-
     if(const(true), const(false), const(true))
   ).
 
+test(evaluate_succ_reducible, [nondet]) :-
+  evaluate(
+    succ(if(const(true), const(0), succ(const(0)))),
+    succ(const(0))
+  ).
+
+test(evaluate_pred_zero, [nondet]) :-
+  evaluate(
+    pred(const(0)),
+    const(0)
+  ).
+
+test(evaluate_pred_succ_zero, [nondet]) :-
+  evaluate(
+    pred(succ(const(0))),
+    const(0)
+  ).
+
+test(evaluate_pred_reducible, [nondet]) :-
+  evaluate(
+    pred(if(const(true), const(0), succ(const(0)))),
+    pred(const(0))
+  ).
+
+test(evaluate_iszero_zero, [nondet]) :-
+  evaluate(
+    iszero(const(0)),
+    const(true)
+  ).
+
+test(evaluate_is_zero_succ, [nondet]) :-
+  evaluate(
+    iszero(succ(const(0))),
+    const(false)
+  ).
+
+test(evaluate_is_zero_reducible, [nondet]) :-
+  evaluate(
+    iszero(if(const(true), const(0), succ(const(0)))),
+    iszero(const(0))
+  ).
+
 :- end_tests(evaluate).
 
 :- begin_tests(free_variables).

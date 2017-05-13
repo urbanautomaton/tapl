@@ -58,4 +58,10 @@ test(parse_boolean_constant) :-
 test(parse_fails_for_consts_in_lambda_param) :-
   \+ parse_term(`λtrue. true`, _).
 
+test(parse_numeric_expression) :-
+  parse_term(
+    `iszero(pred(succ(0)))`,
+    iszero(pred(succ(const(0))))
+  ).
+
 :- end_tests(parse_term).

@@ -6,7 +6,7 @@ parse_term(String, Term) :-
   phrase(lambda_expr(X), String, []), X = Term, !.
 
 % t  ::= t' t | t'
-% t' ::= x | λx:type. t | if t then t else t | true | false | (t)
+% t' ::= x | λx:type. t | if t then t else t | iszero(t) | succ(t) | pred(t) | true | false | 0 | (t)
 
 lambda_expr(X) -->
   lambda_expr_(X).
@@ -22,9 +22,15 @@ lambda_expr_(λ(X, T, Y)) -->
   `λ`, lambda_var(X), `:`, lambda_type(T), `.`, whites, lambda_expr(Y).
 lambda_expr_(if(X, Y, Z)) -->
   `if `, lambda_expr(X), whitespace, `then`, whitespace, lambda_expr(Y), whitespace, `else`, whitespace, lambda_expr(Z).
-lambda_expr_(const(X)) -->
-  atom_name(X),
-  { constant(X) }.
+lambda_expr_(iszero(X)) -->
+  `iszero(`, lambda_expr(X), `)`.
+lambda_expr_(succ(X)) -->
+  `succ(`, lambda_expr(X), `)`.
+lambda_expr_(pred(X)) -->
+  `pred(`, lambda_expr(X), `)`.
+lambda_expr_(const(true)) --> `true`.
+lambda_expr_(const(false)) --> `false`.
+lambda_expr_(const(0)) --> `0`.
 lambda_expr_(X) -->
   `(`, lambda_expr(X), `)`.
 
@@ -36,12 +42,15 @@ lambda_type_(T) --> `(`, lambda_type(T), `)`.
 
 lambda_var(Variable) -->
   atom_name(Variable),
-  { \+ constant(Variable) }.
+  { \+ reserved(Variable) }.
 
 whitespace --> white, whites.
 
-constant(true).
-constant(false).
+reserved(if).
+reserved(then).
+reserved(else).
+reserved(true).
+reserved(false).
 
 atom_name(A) -->
   lower_letter(H),

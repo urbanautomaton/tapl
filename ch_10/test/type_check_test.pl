@@ -46,4 +46,40 @@ test(typeof_abstraction_with_if_body, [nondet]) :-
     )
   ).
 
+test(typeof_zero, [nondet]) :-
+  assertion(
+    typeof(
+      [],
+      const(0),
+      nat
+    )
+  ).
+
+test(typeof_is_zero, [nondet]) :-
+  assertion(
+    typeof(
+      [],
+      iszero(const(0)),
+      bool
+    )
+  ).
+
+test(typeof_succ, [nondet]) :-
+  assertion(
+    typeof(
+      [],
+      succ(const(0)),
+      nat
+    )
+  ).
+
+test(typeof_pred, [nondet]) :-
+  assertion(
+    typeof(
+      [],
+      pred(const(0)),
+      nat
+    )
+  ).
+
 :- end_tests(typeof).

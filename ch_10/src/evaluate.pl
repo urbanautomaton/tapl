@@ -25,6 +25,32 @@ evaluate(if(const(false), _, X), X).
 evaluate(if(X, Y, Z), if(X1, Y, Z)) :-
   evaluate(X, X1).
 
+% E-Succ
+evaluate(succ(T1), succ(T2)) :-
+  evaluate(T1, T2).
+
+% E-PredZero
+evaluate(pred(const(0)), const(0)).
+
+% E-PredSucc
+evaluate(pred(succ(X)), X) :-
+  numeric_value(X).
+
+% E-Pred
+evaluate(pred(T1), pred(T2)) :-
+  evaluate(T1, T2).
+
+% E-IszeroZero
+evaluate(iszero(const(0)), const(true)).
+
+% E-IszeroSucc
+evaluate(iszero(succ(X)), const(false)) :-
+  numeric_value(X).
+
+% E-Iszero
+evaluate(iszero(T1), iszero(T2)) :-
+  evaluate(T1, T2).
+
 beta_reduce((λ(X, _, Y), Z), R) :-
   replace(X, Y, Z, R).
 
@@ -62,6 +88,15 @@ replace(Name, if(X, Y, Z), With, if(RX, RY, RZ)) :-
   replace(Name, X, With, RX),
   replace(Name, Y, With, RY),
   replace(Name, Z, With, RZ).
+
+replace(Name, iszero(X), With, iszero(RX)) :-
+  replace(Name, X, With, RX).
+
+replace(Name, succ(X), With, succ(RX)) :-
+  replace(Name, X, With, RX).
+
+replace(Name, pred(X), With, pred(RX)) :-
+  replace(Name, X, With, RX).
 
 alpha_convert(λ(X, T, Y), λ(X1, T, Y1), Avoiding) :-
   fresh_name(X, X1, Avoiding),
