@@ -12,4 +12,4 @@ test:
 	swipl -p src=src/ $(TEST_FLAGS) -g run_tests,halt -t 'halt(1)'
 
 console:
-	swipl $(LOAD_FLAGS)
+	swipl -p src=src/ -l load.pl
