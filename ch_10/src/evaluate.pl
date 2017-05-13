@@ -16,10 +16,10 @@ evaluate((λ(X, _, Y), V), R) :-
   beta_reduce((λ(X, _, Y), V), R).
 
 % E-IfTrue
-evaluate(if(true, X, _), X).
+evaluate(if(const(true), X, _), X).
 
 % E-IfFalse
-evaluate(if(false, _, X), X).
+evaluate(if(const(false), _, X), X).
 
 % E-If
 evaluate(if(X, Y, Z), if(X1, Y, Z)) :-
@@ -36,6 +36,8 @@ replace(Name, In, With, With) :-
 replace(Name, In, _, In) :-
   variable(In),
   Name \== In.
+
+replace(_, const(X), _, const(X)).
 
 replace(Name, (X, Y), With, (RX, RY)) :-
   replace(Name, X, With, RX),
@@ -84,6 +86,8 @@ rewrite(Name, λ(X, _, Y), With, λ(X, _, Y1)) :-
 
 free_variables(T, Vs) :-
   free_variables([], T, Vs).
+
+free_variables(_, const(_), []).
 
 free_variables(Bound, X, []) :-
   variable(X),

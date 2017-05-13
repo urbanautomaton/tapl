@@ -5,16 +5,16 @@
 :- begin_tests(typeof).
 
 test(typeof_true, [nondet]) :-
-  assertion(typeof([], true, bool)).
+  assertion(typeof([], const(true), bool)).
 
 test(typeof_false, [nondet]) :-
-  assertion(typeof([], false, bool)).
+  assertion(typeof([], const(false), bool)).
 
 test(typeof_if_true_then_bools, [nondet]) :-
   assertion(
     typeof(
       [],
-      if(true, false, true),
+      if(const(true), const(false), const(true)),
       bool
     )
   ).
@@ -23,7 +23,7 @@ test(typeof_application, [nondet]) :-
   assertion(
     typeof(
       [],
-      (λ(x, bool, x), true),
+      (λ(x, bool, x), const(true)),
       bool
     )
   ).
@@ -41,7 +41,7 @@ test(typeof_abstraction_with_if_body, [nondet]) :-
   assertion(
     typeof(
       [],
-      λ(y,bool,if(y,false,true)),
+      λ(y,bool,if(y,const(false),const(true))),
       function(bool, bool)
     )
   ).

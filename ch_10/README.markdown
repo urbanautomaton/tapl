@@ -18,9 +18,9 @@ And to run it interactively:
 
     $ make console
     ?- run(`(λx:Bool->Bool. x true) (λy:Bool. if y then false else true)`, _).
-    AST parsed:λ(x,function(bool,bool), (x,true)),λ(y,bool,if(y,false,true))
+    AST parsed:λ(x,function(bool,bool), (x,const(true))),λ(y,bool,if(y,const(false),const(true)))
     Type established:bool
-    Intermediate:λ(y,bool,if(y,false,true)),true
-    Intermediate:if(true,false,true)
-    Intermediate:false
-    Result:false
+    Intermediate:λ(y,bool,if(y,const(false),const(true))),const(true)
+    Intermediate:if(const(true),const(false),const(true))
+    Intermediate:const(false)
+    Result:const(false)

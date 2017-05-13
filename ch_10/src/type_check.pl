@@ -8,10 +8,10 @@ typeof(Γ, X, T) :-
   member((X, T), Γ).
 
 % T-True
-typeof(_, true, bool).
+typeof(_, const(true), bool).
 
 % T-False
-typeof(_, false, bool).
+typeof(_, const(false), bool).
 
 % T-If
 typeof(Γ, if(X, Y, Z), T) :-

@@ -52,4 +52,10 @@ test(parse_if_statement) :-
     if(x, y, z)
   ).
 
+test(parse_boolean_constant) :-
+  parse_term(`false`, const(false)).
+
+test(parse_fails_for_consts_in_lambda_param) :-
+  \+ parse_term(`λtrue. true`, _).
+
 :- end_tests(parse_term).

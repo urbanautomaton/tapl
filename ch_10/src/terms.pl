@@ -3,5 +3,5 @@
 variable(X) :- atom(X).
 
 value(λ(_, _, _)).
-value(true).
-value(false).
+value(const(true)).
+value(const(false)).

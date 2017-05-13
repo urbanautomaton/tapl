@@ -35,8 +35,8 @@ test(evaluate_lhs_app, [nondet]) :-
 test(evaluate_app_with_rhs_bool, [nondet]) :-
   assertion(
     evaluate(
-      (λ(x, type1, x), true),
-      true
+      (λ(x, type1, x), const(true)),
+      const(true)
     )
   ).
 
@@ -49,29 +49,29 @@ test(evaluate_with_capture_risk, [nondet]) :-
 
 test(evaluate_app_abs_with_if_body, [nondet]) :-
   evaluate(
-    (λ(y,bool,if(y,false,true)), true),
-    if(true, false, true)
+    (λ(y,bool,if(y,const(false),const(true))), const(true)),
+    if(const(true), const(false), const(true))
   ).
 
 % if true then x else y
 test(evaluate_if_with_true_arg, [nondet]) :-
   evaluate(
-    if(true, x, y),
+    if(const(true), x, y),
     x
   ).
 
 % if false then x else y
 test(evaluate_if_with_false_arg, [nondet]) :-
   evaluate(
-    if(false, x, y),
+    if(const(false), x, y),
     y
   ).
 
 % if (λ.x x) true then false else true
 test(evaluate_if_with_reducible_arg, [nondet]) :-
   evaluate(
-    if((λ(x, type1, x), true), false, true),
-    if(true, false, true)
+    if((λ(x, type1, x), const(true)), const(false), const(true)),
+    if(const(true), const(false), const(true))
   ).
 
 :- end_tests(evaluate).
