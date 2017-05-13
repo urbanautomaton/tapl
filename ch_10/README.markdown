@@ -16,7 +16,11 @@ Then to run the tests:
 
 And to run it interactively:
 
-    # TODO fix example
     $ make console
-    ?- evaluate(((λ(x, x), λ(x, x)), λ(z, z)), X).
-    X = (λ(x, x), λ(z, z)).
+    ?- run(`(λx:Bool->Bool. x true) (λy:Bool. if y then false else true)`, _).
+    AST parsed:λ(x,function(bool,bool), (x,true)),λ(y,bool,if(y,false,true))
+    Type established:bool
+    Intermediate:λ(y,bool,if(y,false,true)),true
+    Intermediate:if(true,false,true)
+    Intermediate:false
+    Result:false

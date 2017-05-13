@@ -1,4 +1,5 @@
 :- [
+  src(lambda_parser),
   src(lambda),
-  src(lambda_parser)
+  src(machine)
 ].
