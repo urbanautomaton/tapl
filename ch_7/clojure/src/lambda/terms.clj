@@ -1,6 +1,6 @@
 (ns lambda.terms
   (:require [lambda.names :refer [fresh-name]]
-            [lambda.parser :refer [parse]]
+            [instaparse.core :as insta]
             [clojure.set :refer [union]]))
 
 (defprotocol FreeVariables
@@ -45,7 +45,7 @@
 
 (defrecord Abs [param body]
   Object
-  (toString [_] (str "λ." param " " (str body)))
+  (toString [_] (str "(λ." param " " (str body) ")"))
   
   FreeVariables
   (free-variables-in [_ bound]
@@ -56,7 +56,7 @@
     (Abs. nil (remove-names-in body (conj bound param) naming)))
   (restore-names-in [_ naming]
     (let [name (fresh-name (map :name naming))]
-      (Abs. (Var. name) (restore-names-in body (conj naming name))))))
+      (Abs. (Var. name) (restore-names-in body (conj naming (Var. name)))))))
 
 (defn free-variables [term]
   (free-variables-in term '()))
@@ -67,4 +67,16 @@
 (defn restore-names [term]
   (restore-names-in term '()))
 
-(restore-names (remove-names (parse "λ.w (λ.x x) (λ.y w)")))
+(defn- recordize [term]
+  (case (first term)
+    :var (Var. (last term))
+    :app (apply ->App (map recordize (rest term)))
+    :abs (apply ->Abs (map recordize (rest term)))))
+
+(def parser (insta/parser (clojure.java.io/resource "lambda.bnf")))
+
+(defn parse [input]
+ (recordize (last (parser input))))
+
+(str (remove-names (parse "λ.w (λ.x x) (λ.y w)")))
+(str (restore-names (remove-names (parse "λ.w (λ.x x) (λ.y w)"))))
