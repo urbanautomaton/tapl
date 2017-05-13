@@ -37,6 +37,15 @@ test(typeof_simple_abstraction, [nondet]) :-
     )
   ).
 
+test(typeof_abstraction_with_if_body, [nondet]) :-
+  assertion(
+    typeof(
+      [],
+      λ(y,bool,if(y,false,true)),
+      function(bool, bool)
+    )
+  ).
+
 :- end_tests(typeof).
 
 :- begin_tests(evaluate).
@@ -82,6 +91,12 @@ test(evaluate_with_capture_risk, [nondet]) :-
   evaluate(
     (λ(x, type1, λ(y, type2, (x, y))), λ(x, type3, y)),
     λ(z, type2, (λ(x, type3, y), z))
+  ).
+
+test(evaluate_app_abs_with_if_body, [nondet]) :-
+  evaluate(
+    (λ(y,bool,if(y,false,true)), true),
+    if(true, false, true)
   ).
 
 % if true then x else y

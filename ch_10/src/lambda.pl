@@ -86,6 +86,11 @@ replace(Name, λ(X, T, Y), With, λ(X1, T, RY)) :-
   alpha_convert(λ(X, T, Y), λ(X1, T, Y1), FreeInWith),
   replace(Name, λ(X1, T, Y1), With, RY).
 
+replace(Name, if(X, Y, Z), With, if(RX, RY, RZ)) :-
+  replace(Name, X, With, RX),
+  replace(Name, Y, With, RY),
+  replace(Name, Z, With, RZ).
+
 alpha_convert(λ(X, T, Y), λ(X1, T, Y1), Avoiding) :-
   fresh_name(X, X1, Avoiding),
   rewrite(X, Y, X1, Y1).
