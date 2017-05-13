@@ -1,6 +1,6 @@
 % vim: set ft=prolog:
 
-:- [src(lambda_parser)].
+:- [src(parser)].
 
 :- begin_tests(parse_term).
 

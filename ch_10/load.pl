@@ -1,5 +1,6 @@
 :- [
-  src(lambda_parser),
-  src(lambda),
+  src(parser),
+  src(type_check),
+  src(evaluate),
   src(machine)
 ].

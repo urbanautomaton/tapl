@@ -1,4 +1,4 @@
-:- [src(lambda), src(lambda_parser)].
+:- [src(parser), src(type_check), src(evaluate)].
 
 println([]) :- write("\n").
 println([H|T]) :-
