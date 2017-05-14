@@ -2,10 +2,13 @@
 
 :- [src(terms)].
 
+typeof(X, T) :-
+  typeof(context{}, X, T).
+
 % T-Var
 typeof(Γ, X, T) :-
   variable(X),
-  member((X, T), Γ).
+  T = Γ.get(X).
 
 % T-True
 typeof(_, const(true), bool).
@@ -24,7 +27,7 @@ typeof(Γ, if(X, Y, Z), T) :-
 
 % T-Abs
 typeof(Γ, λ(X, T1, Z), function(T1, T2)) :-
-  typeof([(X, T1)|Γ], Z, T2).
+  typeof(Γ.put(X, T1), Z, T2).
 
 % T-App
 typeof(Γ, (X, Y), T2) :-

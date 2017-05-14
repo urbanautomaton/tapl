@@ -7,7 +7,7 @@ println([H|T]) :-
 run(Program, Result) :-
   parse_term(Program, Term),
   println(["AST parsed:", Term]),
-  typeof([], Term, Type),
+  typeof(Term, Type),
   println(["Type established:", Type]),
   run_(Term, Result),
   println(["Result:", Result]).
